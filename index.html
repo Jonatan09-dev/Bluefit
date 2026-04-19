@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="pb-24">
+<body class="pb-24 bg-[#0f172a] text-white">
 
     <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6">
         <h1 class="text-5xl font-black text-pink-600 mb-8 italic">Bluefit</h1>
@@ -19,13 +19,13 @@
     </div>
 
     <div id="app-content" class="hidden">
-        <header class="p-6 flex justify-between items-center">
+        <header class="p-6 flex justify-between items-center bg-[#0f172a]/80 backdrop-blur sticky top-0 z-50">
             <h1 class="text-2xl font-bold text-pink-600 italic">Bluefit</h1>
             <button id="logout-btn" class="text-slate-500 text-xs">Logout</button>
         </header>
 
         <main class="px-6 space-y-6">
-            <div class="bg-slate-900 p-6 rounded-[32px] border border-slate-800 flex flex-col items-center">
+            <div class="bg-slate-900 p-6 rounded-[32px] border border-slate-800 flex flex-col items-center shadow-2xl">
                 <div class="relative flex items-center justify-center mb-4">
                     <svg class="progress-ring" width="160" height="160">
                         <circle stroke="#1e293b" stroke-width="10" fill="transparent" r="70" cx="80" cy="80"/>
@@ -37,12 +37,12 @@
                     </div>
                 </div>
                 <div class="flex gap-4 text-center text-xs text-slate-400">
-                    <p>Ziel: <span id="goal-val" class="text-white font-bold">2500</span></p>
+                    <p>Ziel: <span id="goal-val" class="text-white font-bold">---</span></p>
                     <p>Gegessen: <span id="eaten-val" class="text-pink-500 font-bold">0</span></p>
                 </div>
             </div>
 
-            <div class="space-y-3" id="meal-sections">
+            <div class="space-y-3">
                 <div id="cat-breakfast"></div>
                 <div id="cat-lunch"></div>
                 <div id="cat-dinner"></div>
@@ -50,17 +50,17 @@
                 <div id="cat-snack2"></div>
             </div>
 
-            <div class="bg-slate-900 p-6 rounded-[32px] border border-blue-900/30 mt-6">
+            <div class="bg-slate-900 p-6 rounded-[32px] border border-blue-900/30 mt-6 shadow-xl">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-bold text-blue-400">Wasser Tracker</h3>
                     <div class="flex gap-2">
-                        <button id="sub-water" class="bg-slate-800 w-8 h-8 rounded-full border border-slate-700">-</button>
-                        <button id="add-water" class="bg-blue-600 w-8 h-8 rounded-full font-bold shadow-lg shadow-blue-900/40">+</button>
+                        <button id="sub-water" class="bg-slate-800 w-10 h-10 rounded-full border border-slate-700">-</button>
+                        <button id="add-water" class="bg-blue-600 w-10 h-10 rounded-full font-bold shadow-lg shadow-blue-900/40">+</button>
                     </div>
                 </div>
-                <div id="water-glasses" class="flex flex-wrap gap-2 justify-center text-2xl transition-all"></div>
+                <div id="water-glasses" class="flex flex-wrap gap-2 justify-center text-3xl"></div>
                 <p class="text-center text-[10px] text-slate-500 mt-4 uppercase tracking-widest">
-                    <span id="water-current" class="text-blue-400">0</span> / <span id="water-goal">2000</span> ml
+                    <span id="water-current" class="text-blue-400">0</span> / <span id="water-goal">2500</span> ml
                 </p>
             </div>
         </main>
