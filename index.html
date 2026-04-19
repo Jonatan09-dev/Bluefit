@@ -84,38 +84,61 @@
     </div>
 
     <script>
-        // DEINE FIXEN DATEN (Korrigiert)
-        const firebaseConfig = {
-            apiKey: "AIzaSyBvAvCiCoMu6j9znTnjnv21vgaqFLwgNAk",
-            authDomain: "bluefit-d671e.firebaseapp.com",
-            projectId: "bluefit-d671e",
-            storageBucket: "bluefit-d671e.firebasestorage.app",
-            messagingSenderId: "972090891640",
-            appId: "1:972090891640:web:5036ed05019d4277cefc8d"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyBvAvCiCoMu6j9znTnjnv21vgaqFLwgNAk",
+        authDomain: "bluefit-d671e.firebaseapp.com",
+        projectId: "bluefit-d671e",
+        storageBucket: "bluefit-d671e.firebasestorage.app",
+        messagingSenderId: "972090891640",
+        appId: "1:972090891640:web:5036ed05019d4277cefc8d"
+    };
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-        function handleAuth() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            const errorElement = document.getElementById('error-msg');
-            
-            if(!email || !pass) {
-                errorElement.innerText = "Bitte E-Mail und Passwort eingeben.";
-                return;
-            }
+    function handleAuth() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        const errorElement = document.getElementById('error-msg');
+        
+        if(!email || !pass) {
+            errorElement.innerText = "Bitte Daten eingeben.";
+            return;
+        }
 
-            auth.signInWithEmailAndPassword(email, pass).catch((error) => {
+        errorElement.innerText = "Verarbeitung...";
+
+        // Versuch einzuloggen, wenn fehlgeschlagen -> Registrieren
+        auth.signInWithEmailAndPassword(email, pass)
+            .then((userCredential) => {
+                console.log("Login erfolgreich!");
+                showApp(); // Manuelle Umschaltung
+            })
+            .catch((error) => {
                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    return auth.createUserWithEmailAndPassword(email, pass);
+                    auth.createUserWithEmailAndPassword(email, pass)
+                        .then(() => showApp())
+                        .catch(err => errorElement.innerText = "Fehler: " + err.message);
                 } else {
                     errorElement.innerText = error.message;
                 }
             });
-        }
+    }
 
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('login-screen').classList.add('
+    // Funktion zum Umschalten der Ansicht
+    function showApp() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-content').classList.remove('hidden');
+        console.log("App-Inhalt wird jetzt angezeigt");
+    }
+
+    // Überwachung des Login-Status
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            showApp();
+        } else {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('app-content').classList.add('hidden');
+        }
+    });
+</script>
