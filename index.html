@@ -5,121 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bluefit Nutrition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #0f172a; color: white; font-family: sans-serif; overflow-x: hidden; }
-        .hidden { display: none; }
-        .progress-ring { transform: rotate(-90deg); }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="pb-20">
+<body class="pb-24">
 
-    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6 text-center">
-        <h1 class="text-5xl font-black text-pink-600 mb-2 italic text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-600">Bluefit</h1>
-        <p class="text-slate-400 mb-8 text-sm uppercase tracking-widest">Your Fitness Journey</p>
-        
+    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6">
+        <h1 class="text-5xl font-black text-pink-600 mb-8 italic italic">Bluefit</h1>
         <div class="w-full max-w-sm space-y-4">
-            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-pink-600 transition-all text-white">
-            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-pink-600 transition-all text-white">
-            <button id="login-btn" class="w-full p-4 bg-pink-600 rounded-2xl font-bold text-lg active:scale-95 transition-all shadow-lg shadow-pink-900/20">Login / Registrieren</button>
-            <p id="error-msg" class="text-red-500 text-sm font-medium mt-4"></p>
+            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 text-white outline-none">
+            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 text-white outline-none">
+            <button id="login-btn" class="w-full p-4 bg-pink-600 text-white rounded-2xl font-bold">Starten</button>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
-        <header class="p-6 flex justify-between items-center bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <header class="p-6 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-pink-600 italic">Bluefit</h1>
-            <button id="logout-btn" class="text-slate-500 text-xs bg-slate-800 px-4 py-2 rounded-full border border-slate-700">Logout</button>
+            <button id="logout-btn" class="text-slate-500 text-xs">Logout</button>
         </header>
 
-        <main class="px-6 space-y-8 mt-4">
-            <div class="bg-slate-900/80 p-8 rounded-[40px] border border-slate-800 flex flex-col items-center shadow-2xl relative">
-                <div class="relative flex items-center justify-center mb-6">
-                    <svg class="progress-ring" width="180" height="180">
-                        <circle stroke="#1e293b" stroke-width="12" fill="transparent" r="75" cx="90" cy="90"/>
-                        <circle id="kcal-ring" stroke="#db2777" stroke-width="12" stroke-dasharray="471" stroke-dashoffset="150" stroke-linecap="round" fill="transparent" r="75" cx="90" cy="90"/>
+        <main class="px-6 space-y-6">
+            <div class="bg-slate-900 p-6 rounded-[32px] border border-slate-800 flex flex-col items-center">
+                <div class="relative flex items-center justify-center mb-4">
+                    <svg class="progress-ring" width="160" height="160">
+                        <circle stroke="#1e293b" stroke-width="10" fill="transparent" r="70" cx="80" cy="80"/>
+                        <circle id="kcal-ring" stroke="#db2777" stroke-width="10" stroke-dasharray="440" stroke-dashoffset="440" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80"/>
                     </svg>
                     <div class="absolute text-center">
-                        <span id="kcal-val" class="text-4xl font-black block">2.514</span>
-                        <span class="text-slate-500 text-[10px] uppercase tracking-widest">kcal offen</span>
+                        <span id="display-kcal-offen" class="text-3xl font-black block">0</span>
+                        <span class="text-[10px] text-slate-500 uppercase">kcal übrig</span>
                     </div>
                 </div>
-
-                <div class="grid grid-cols-3 gap-6 w-full text-center border-t border-slate-800 pt-6">
-                    <div><span class="block font-bold text-blue-400">72g</span><span class="text-[9px] text-slate-500 uppercase">Carbs</span></div>
-                    <div><span class="block font-bold text-pink-500">37g</span><span class="text-[9px] text-slate-500 uppercase">Protein</span></div>
-                    <div><span class="block font-bold text-emerald-400">16g</span><span class="text-[9px] text-slate-500 uppercase">Fett</span></div>
+                <div class="flex gap-4 text-center text-xs text-slate-400">
+                    <p>Ziel: <span id="goal-val" class="text-white font-bold">2500</span></p>
+                    <p>Gegessen: <span id="eaten-val" class="text-pink-500 font-bold">0</span></p>
                 </div>
             </div>
 
-            <div class="space-y-4">
-                <h3 class="text-lg font-bold px-2">Mahlzeiten heute</h3>
-                <div class="bg-slate-800/40 p-5 rounded-3xl flex justify-between items-center border border-slate-800">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-pink-600/10 rounded-2xl flex items-center justify-center text-2xl">☕</div>
-                        <div><p class="font-bold text-sm">Frühstück</p><p class="text-xs text-slate-500">611 kcal</p></div>
-                    </div>
-                    <button class="bg-pink-600 w-10 h-10 rounded-full flex items-center justify-center text-2xl font-light shadow-lg shadow-pink-900/40">+</button>
+            <div class="bg-slate-800/50 p-4 rounded-3xl border border-slate-700">
+                <div class="flex gap-2">
+                    <input id="food-name" type="text" placeholder="Was?" class="flex-1 bg-slate-900 p-3 rounded-xl text-sm outline-none text-white border border-slate-700">
+                    <input id="food-kcal" type="number" placeholder="kcal" class="w-20 bg-slate-900 p-3 rounded-xl text-sm outline-none text-white border border-slate-700">
+                    <button id="add-food-btn" class="bg-pink-600 px-4 rounded-xl font-bold text-xl">+</button>
                 </div>
+            </div>
+
+            <div id="food-list" class="space-y-3"></div>
+
+            <div class="bg-blue-900/20 p-5 rounded-3xl border border-blue-900/30 flex justify-between items-center">
+                <div>
+                    <p class="font-bold text-blue-400">Wasser</p>
+                    <p class="text-xs text-slate-500"><span id="water-val">0</span>ml</p>
+                </div>
+                <button id="add-water-btn" class="bg-blue-600 w-12 h-12 rounded-2xl text-xl">💧</button>
             </div>
         </main>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        // EXAKT DEIN BLOCK
-        const firebaseConfig = {
-            apiKey: "AIzaSyBvAvCiCoMU6j9znTnjnv21vgaqFlwgNak",
-            authDomain: "bluefit-d671e.firebaseapp.com",
-            projectId: "bluefit-d671e",
-            storageBucket: "bluefit-d671e.firebasestorage.app",
-            messagingSenderId: "972090891640",
-            appId: "1:972090891640:web:5036ed05019d4277cefc8d",
-            measurementId: "G-5WZ2Q1EPZN"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Login Handler
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            const errorElement = document.getElementById('error-msg');
-            
-            errorElement.innerText = "Verbindung wird hergestellt...";
-
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } catch (error) {
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                    try {
-                        await createUserWithEmailAndPassword(auth, email, pass);
-                    } catch (regError) {
-                        errorElement.innerText = "Fehler: " + regError.message;
-                    }
-                } else {
-                    errorElement.innerText = "Fehler: " + error.message;
-                }
-            }
-        });
-
-        // Logout Handler
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth);
-        });
-
-        // Status Überwachung
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('app-content').classList.add('hidden');
-            }
-        });
-    </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
