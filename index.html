@@ -14,27 +14,25 @@
 <body class="pb-20">
 
     <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6 text-center">
-        <h1 class="text-5xl font-black text-pink-600 mb-2 italic">Bluefit</h1>
+        <h1 class="text-5xl font-black text-pink-600 mb-2 italic text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-600">Bluefit</h1>
         <p class="text-slate-400 mb-8 text-sm uppercase tracking-widest">Your Fitness Journey</p>
         
         <div class="w-full max-w-sm space-y-4">
-            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-pink-600 transition-all">
-            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-pink-600 transition-all">
-            <button onclick="window.handleAuth()" class="w-full p-4 bg-pink-600 rounded-2xl font-bold text-lg active:scale-95 transition-all shadow-lg shadow-pink-900/20">Login / Registrieren</button>
-            <p id="error-msg" class="text-red-500 text-sm font-medium"></p>
+            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-pink-600 transition-all text-white">
+            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-pink-600 transition-all text-white">
+            <button id="login-btn" class="w-full p-4 bg-pink-600 rounded-2xl font-bold text-lg active:scale-95 transition-all shadow-lg shadow-pink-900/20">Login / Registrieren</button>
+            <p id="error-msg" class="text-red-500 text-sm font-medium mt-4"></p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
         <header class="p-6 flex justify-between items-center bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
             <h1 class="text-2xl font-bold text-pink-600 italic">Bluefit</h1>
-            <button onclick="window.handleLogout()" class="text-slate-500 text-xs bg-slate-800 px-4 py-2 rounded-full border border-slate-700">Logout</button>
+            <button id="logout-btn" class="text-slate-500 text-xs bg-slate-800 px-4 py-2 rounded-full border border-slate-700">Logout</button>
         </header>
 
         <main class="px-6 space-y-8 mt-4">
-            <div class="bg-slate-900/80 p-8 rounded-[40px] border border-slate-800 flex flex-col items-center shadow-2xl relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-pink-600 to-transparent"></div>
-                
+            <div class="bg-slate-900/80 p-8 rounded-[40px] border border-slate-800 flex flex-col items-center shadow-2xl relative">
                 <div class="relative flex items-center justify-center mb-6">
                     <svg class="progress-ring" width="180" height="180">
                         <circle stroke="#1e293b" stroke-width="12" fill="transparent" r="75" cx="90" cy="90"/>
@@ -55,20 +53,12 @@
 
             <div class="space-y-4">
                 <h3 class="text-lg font-bold px-2">Mahlzeiten heute</h3>
-                <div class="bg-slate-800/40 p-5 rounded-3xl flex justify-between items-center border border-slate-800 hover:bg-slate-800/60 transition-all">
+                <div class="bg-slate-800/40 p-5 rounded-3xl flex justify-between items-center border border-slate-800">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-pink-600/10 rounded-2xl flex items-center justify-center text-2xl">☕</div>
-                        <div><p class="font-bold">Frühstück</p><p class="text-xs text-slate-500">Geplant: 600 kcal</p></div>
+                        <div><p class="font-bold text-sm">Frühstück</p><p class="text-xs text-slate-500">611 kcal</p></div>
                     </div>
                     <button class="bg-pink-600 w-10 h-10 rounded-full flex items-center justify-center text-2xl font-light shadow-lg shadow-pink-900/40">+</button>
-                </div>
-
-                <div class="bg-slate-800/40 p-5 rounded-3xl flex justify-between items-center border border-slate-800 opacity-60">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-slate-700/20 rounded-2xl flex items-center justify-center text-2xl">🥪</div>
-                        <div><p class="font-bold">Mittagessen</p><p class="text-xs text-slate-500">Noch nichts eingetragen</p></div>
-                    </div>
-                    <button class="bg-slate-700 w-10 h-10 rounded-full flex items-center justify-center text-2xl font-light">+</button>
                 </div>
             </div>
         </main>
@@ -78,6 +68,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // EXAKT DEIN BLOCK
         const firebaseConfig = {
             apiKey: "AIzaSyBvAvCiCoMU6j9znTnjnv21vgaqFlwgNak",
             authDomain: "bluefit-d671e.firebaseapp.com",
@@ -91,18 +82,13 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // LOGIN FUNKTION
-        window.handleAuth = async () => {
+        // Login Handler
+        document.getElementById('login-btn').addEventListener('click', async () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             const errorElement = document.getElementById('error-msg');
             
-            if(!email || !pass) {
-                errorElement.innerText = "Bitte E-Mail und Passwort eingeben.";
-                return;
-            }
-
-            errorElement.innerText = "Verarbeite...";
+            errorElement.innerText = "Verbindung wird hergestellt...";
 
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
@@ -117,24 +103,21 @@
                     errorElement.innerText = "Fehler: " + error.message;
                 }
             }
-        };
+        });
 
-        // LOGOUT FUNKTION
-        window.handleLogout = () => {
+        // Logout Handler
+        document.getElementById('logout-btn').addEventListener('click', () => {
             signOut(auth);
-        };
+        });
 
-        // STATUS ÜBERWACHUNG
+        // Status Überwachung
         onAuthStateChanged(auth, (user) => {
-            const loginScreen = document.getElementById('login-screen');
-            const appContent = document.getElementById('app-content');
-            
             if (user) {
-                loginScreen.classList.add('hidden');
-                appContent.classList.remove('hidden');
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
             } else {
-                loginScreen.classList.remove('hidden');
-                appContent.classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app-content').classList.add('hidden');
             }
         });
     </script>
