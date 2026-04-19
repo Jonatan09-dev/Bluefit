@@ -8,69 +8,72 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <style>
-        body { background-color: #111827; color: white; font-family: sans-serif; }
-        .hidden { display: none; }
-        .progress-ring { transform: rotate(-90deg); }
-    </style>
 </head>
-<body class="pb-20">
+<body class="bg-[#111827] text-white font-sans pb-20">
 
     <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-4xl font-bold text-pink-600 mb-8">Bluefit</h1>
+        <h1 class="text-4xl font-bold text-[#db2777] mb-8 italic">Bluefit</h1>
         <div class="w-full max-w-sm space-y-4">
-            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-gray-800 rounded-xl border border-gray-700">
-            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-gray-800 rounded-xl border border-gray-700">
-            <button onclick="handleAuth()" class="w-full p-4 bg-pink-600 rounded-xl font-bold">Login / Registrieren</button>
-            <p id="error" class="text-red-500 text-sm"></p>
+            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-[#db2777]">
+            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-[#db2777]">
+            <button onclick="handleAuth()" id="btn-text" class="w-full p-4 bg-[#db2777] rounded-2xl font-bold active:scale-95 transition-transform">Login / Registrieren</button>
+            <p id="error-msg" class="text-red-500 text-sm text-center font-medium"></p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
-        <header class="p-6 flex justify-between items-center">
+        <header class="p-6 flex justify-between items-center bg-[#111827]/80 backdrop-blur sticky top-0 z-50">
             <h1 class="text-2xl font-bold">Ernährung</h1>
-            <button onclick="firebase.auth().signOut()" class="text-gray-400 text-xs">Logout</button>
+            <button onclick="firebase.auth().signOut()" class="text-gray-500 text-xs bg-gray-800 px-3 py-1 rounded-full">Logout</button>
         </header>
 
         <main class="px-6 space-y-6">
-            <div class="bg-gray-900/50 p-6 rounded-3xl border border-gray-800 flex flex-col items-center">
+            <div class="bg-[#1e293b]/50 p-6 rounded-[32px] border border-gray-800 flex flex-col items-center shadow-2xl">
                 <div class="relative flex items-center justify-center">
-                    <svg class="progress-ring" width="160" height="160">
-                        <circle stroke="#1f2937" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
-                        <circle id="kcal-progress" stroke="#db2777" stroke-width="8" stroke-dasharray="440" stroke-dashoffset="100" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80"/>
+                    <svg class="rotate-[-90deg]" width="180" height="180">
+                        <circle stroke="#1f2937" stroke-width="10" fill="transparent" r="75" cx="90" cy="90"/>
+                        <circle id="kcal-ring" stroke="#db2777" stroke-width="10" stroke-dasharray="471" stroke-dashoffset="120" stroke-linecap="round" fill="transparent" r="75" cx="90" cy="90"/>
                     </svg>
                     <div class="absolute text-center">
-                        <span id="kcal-offen" class="text-3xl font-bold block">2514</span>
-                        <span class="text-gray-500 text-xs uppercase">kcal offen</span>
+                        <span id="kcal-offen" class="text-4xl font-black block">2514</span>
+                        <span class="text-gray-500 text-[10px] uppercase tracking-widest">kcal offen</span>
                     </div>
                 </div>
-                <div class="flex gap-8 mt-6 text-center w-full justify-around">
-                    <div><span id="carbs" class="block font-bold">72g</span><span class="text-[10px] text-gray-500">CARBS</span></div>
-                    <div><span id="protein" class="block font-bold">37g</span><span class="text-[10px] text-gray-500">PROTEIN</span></div>
-                    <div><span id="fat" class="block font-bold">16g</span><span class="text-[10px] text-gray-500">FETT</span></div>
+                
+                <div class="grid grid-cols-3 gap-8 mt-8 w-full">
+                    <div class="text-center border-b-2 border-blue-500 pb-2">
+                        <span id="carbs" class="block font-bold">72 / 308g</span>
+                        <span class="text-[9px] text-gray-500 uppercase">Kohlenhydrate</span>
+                    </div>
+                    <div class="text-center border-b-2 border-pink-600 pb-2">
+                        <span id="protein" class="block font-bold">37 / 218g</span>
+                        <span class="text-[9px] text-gray-500 uppercase">Eiweiß</span>
+                    </div>
+                    <div class="text-center border-b-2 border-emerald-500 pb-2">
+                        <span id="fat" class="block font-bold">16 / 104g</span>
+                        <span class="text-[9px] text-gray-500 uppercase">Fett</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="space-y-3">
-                <div class="bg-gray-800/40 p-4 rounded-2xl flex justify-between items-center border border-gray-800">
-                    <div class="flex items-center gap-3"><span>🍳</span> <div><p class="font-bold">Frühstück</p><p class="text-[10px] text-gray-500">611 kcal</p></div></div>
-                    <button onclick="addEntry(400, 20, 30, 10)" class="text-pink-600 text-2xl">+</button>
+            <div class="space-y-4">
+                <div class="bg-[#1e293b]/40 p-5 rounded-3xl flex justify-between items-center border border-gray-800">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-pink-600/10 rounded-xl flex items-center justify-center text-xl">🍳</div>
+                        <div><p class="font-bold">Frühstück</p><p class="text-[10px] text-gray-500">611 kcal</p></div>
+                    </div>
+                    <button onclick="addEntry(611)" class="text-pink-600 text-3xl font-light">+</button>
                 </div>
-                <div class="bg-gray-800/40 p-4 rounded-2xl flex justify-between items-center border border-gray-800">
-                    <div class="flex items-center gap-3"><span>🥪</span> <p class="font-bold">Mittag</p></div>
-                    <button onclick="addEntry(600, 50, 40, 15)" class="text-pink-600 text-2xl">+</button>
+                <div class="bg-[#1e293b]/40 p-5 rounded-3xl flex justify-between items-center border border-gray-800 text-gray-400">
+                    <div class="flex items-center gap-4"><span>🥪</span> <p class="font-bold">Mittagessen</p></div>
+                    <button class="text-pink-600 text-3xl font-light">+</button>
                 </div>
-            </div>
-
-            <div class="bg-blue-900/20 p-4 rounded-2xl border border-blue-900/30 flex justify-between items-center">
-                <div><p class="text-xs text-blue-400 font-bold uppercase">Wasser</p><p id="water-val" class="font-bold">0.0 / 2.5 L</p></div>
-                <button onclick="addWater()" class="bg-blue-600 p-2 rounded-lg text-xl">💧</button>
             </div>
         </main>
     </div>
 
     <script>
-        // Deine Konfiguration aus dem Screenshot:
+        // DEINE FIREBASE DATEN
         const firebaseConfig = {
             apiKey: "AIzaSyBvAvCiCoMu6j9znTnjnv21vgaqFLwgNAk",
             authDomain: "bluefit-d671e.firebaseapp.com",
@@ -84,52 +87,42 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let stats = { kcal: 2514, c: 72, p: 37, f: 16, w: 0 };
-
+        // AUTH FUNKTION
         function handleAuth() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, pass).catch(() => auth.createUserWithEmailAndPassword(email, pass));
+            const errorElement = document.getElementById('error-msg');
+            
+            if(!email || !pass) {
+                errorElement.innerText = "Bitte E-Mail und Passwort eingeben.";
+                return;
+            }
+
+            errorElement.innerText = "Prüfe Daten...";
+
+            auth.signInWithEmailAndPassword(email, pass)
+                .catch((error) => {
+                    if (error.code === 'auth/user-not-found') {
+                        return auth.createUserWithEmailAndPassword(email, pass);
+                    } else {
+                        errorElement.innerText = "Fehler: " + error.message;
+                    }
+                });
         }
 
+        // ZUSTANDS-ÜBERWACHUNG
         auth.onAuthStateChanged(user => {
             if (user) {
-                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-content').classList.remove('hidden');
-                loadData(user.uid);
             } else {
-                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('login-screen').style.display = 'flex';
                 document.getElementById('app-content').classList.add('hidden');
             }
         });
 
-        function addEntry(k, c, p, f) {
-            stats.kcal -= k; stats.c += c; stats.p += p; stats.f += f;
-            updateUI(); saveData();
-        }
-
-        function addWater() {
-            stats.w += 0.25;
-            updateUI(); saveData();
-        }
-
-        function updateUI() {
-            document.getElementById('kcal-offen').innerText = stats.kcal;
-            document.getElementById('carbs').innerText = stats.c + "g";
-            document.getElementById('protein').innerText = stats.p + "g";
-            document.getElementById('fat').innerText = stats.f + "g";
-            document.getElementById('water-val').innerText = stats.w.toFixed(2) + " / 2.5 L";
-        }
-
-        function saveData() {
-            const uid = auth.currentUser.uid;
-            db.collection("users").doc(uid).set(stats);
-        }
-
-        function loadData(uid) {
-            db.collection("users").doc(uid).get().then(doc => {
-                if(doc.exists) { stats = doc.data(); updateUI(); }
-            });
+        function addEntry(kcal) {
+            alert("Mahlzeit hinzugefügt! (Logik folgt im nächsten Schritt)");
         }
     </script>
 </body>
