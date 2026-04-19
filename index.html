@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueFit Nutrition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        .progress-ring { transform: rotate(-90deg); }
+        .glass-btn { transition: all 0.2s; }
+        .glass-btn:active { transform: scale(0.9); background-color: #3b82f6; }
+    </style>
+</head>
+<body class="pb-24">
+
+    <header class="p-6 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <h1 class="text-2xl font-bold text-blue-500">BlueFit</h1>
+        <p class="text-xs text-slate-400">Heute, 19. April</p>
+    </header>
+
+    <main class="p-6 space-y-8">
+        
+        <div class="flex justify-center relative">
+            <svg class="progress-ring" width="200" height="200">
+                <circle class="text-slate-800" stroke-width="12" stroke="currentColor" fill="transparent" r="85" cx="100" cy="100"/>
+                <circle class="text-pink-600" stroke-width="12" stroke-dasharray="534" stroke-dashoffset="150" stroke-linecap="round" stroke="currentColor" fill="transparent" r="85" cx="100" cy="100"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-4xl font-black">1.840</span>
+                <span class="text-slate-400 text-sm">kcal offen</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+            <div class="bg-slate-800 p-3 rounded-2xl text-center border-b-4 border-blue-500">
+                <span class="block font-bold">120g</span>
+                <span class="text-[10px] text-slate-400 uppercase">Carbs</span>
+            </div>
+            <div class="bg-slate-800 p-3 rounded-2xl text-center border-b-4 border-emerald-500">
+                <span class="block font-bold">45g</span>
+                <span class="text-[10px] text-slate-400 uppercase">Protein</span>
+            </div>
+            <div class="bg-slate-800 p-3 rounded-2xl text-center border-b-4 border-orange-500">
+                <span class="block font-bold">30g</span>
+                <span class="text-[10px] text-slate-400 uppercase">Fett</span>
+            </div>
+        </div>
+
+        <section class="bg-blue-600 rounded-3xl p-5 shadow-lg shadow-blue-900/20">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold">Wassertracker</h3>
+                <span id="water-count" class="text-sm font-medium">0.0 / 2.5 L</span>
+            </div>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button onclick="addWater(0.25)" class="glass-btn w-8 h-10 border-2 border-white/50 rounded-b-lg rounded-t-sm"></button>
+                <button onclick="addWater(0.25)" class="glass-btn w-8 h-10 border-2 border-white/50 rounded-b-lg rounded-t-sm"></button>
+                <button onclick="addWater(0.25)" class="glass-btn w-8 h-10 border-2 border-white/50 rounded-b-lg rounded-t-sm"></button>
+                <button onclick="addWater(0.25)" class="glass-btn w-8 h-10 border-2 border-white/50 rounded-b-lg rounded-t-sm"></button>
+            </div>
+        </section>
+
+        <section>
+            <h3 class="font-bold mb-4">Deine Rezepte</h3>
+            <div class="bg-slate-800 rounded-2xl overflow-hidden mb-4">
+                <div class="h-32 bg-slate-700 flex items-center justify-center text-slate-500">Foto hier</div>
+                <div class="p-4 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold">Avocado Bowl</p>
+                        <p class="text-xs text-slate-400">420 kcal | 15 Min</p>
+                    </div>
+                    <button class="text-blue-500 text-2xl">+</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-4 flex justify-around items-center">
+        <span class="text-blue-500 text-xl">🏠</span>
+        <span class="text-slate-500 text-xl">📖</span>
+        <div class="bg-pink-600 w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-pink-900/40 -mt-10 border-4 border-slate-900">+</div>
+        <span class="text-slate-500 text-xl">📈</span>
+        <span class="text-slate-500 text-xl">👤</span>
+    </nav>
+
+    <script>
+        let water = 0;
+        function addWater(amount) {
+            water += amount;
+            document.getElementById('water-count').innerText = water.toFixed(1) + " / 2.5 L";
+        }
+    </script>
+</body>
+</html>
