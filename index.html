@@ -8,72 +8,83 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        .hidden { display: none; }
+        .progress-ring { transform: rotate(-90deg); }
+    </style>
 </head>
-<body class="bg-[#111827] text-white font-sans pb-20">
+<body class="pb-24">
 
     <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-4xl font-bold text-[#db2777] mb-8 italic">Bluefit</h1>
+        <h1 class="text-4xl font-black text-pink-600 mb-8 italic">Bluefit</h1>
         <div class="w-full max-w-sm space-y-4">
-            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-[#db2777]">
-            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-[#db2777]">
-            <button onclick="handleAuth()" id="btn-text" class="w-full p-4 bg-[#db2777] rounded-2xl font-bold active:scale-95 transition-transform">Login / Registrieren</button>
-            <p id="error-msg" class="text-red-500 text-sm text-center font-medium"></p>
+            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-pink-600">
+            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-pink-600">
+            <button onclick="handleAuth()" class="w-full p-4 bg-pink-600 rounded-2xl font-bold active:scale-95 transition-all">Login / Registrieren</button>
+            <p id="error-msg" class="text-red-500 text-sm text-center font-medium mt-2"></p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
-        <header class="p-6 flex justify-between items-center bg-[#111827]/80 backdrop-blur sticky top-0 z-50">
+        <header class="p-6 flex justify-between items-center">
             <h1 class="text-2xl font-bold">Ernährung</h1>
-            <button onclick="firebase.auth().signOut()" class="text-gray-500 text-xs bg-gray-800 px-3 py-1 rounded-full">Logout</button>
+            <button onclick="firebase.auth().signOut()" class="text-slate-500 text-xs bg-slate-800 px-3 py-1 rounded-full">Logout</button>
         </header>
 
+        <div class="flex justify-around px-4 mb-8">
+            <div class="flex flex-col items-center text-[10px] text-slate-500 font-bold uppercase"><span>Mo</span><div class="w-8 h-8 rounded-full border border-pink-600 flex items-center justify-center text-pink-600 mt-1">✓</div></div>
+            <div class="flex flex-col items-center text-[10px] text-white font-bold uppercase"><span>Di</span><div class="w-8 h-8 rounded-full bg-pink-600 flex items-center justify-center mt-1">25</div></div>
+            <div class="flex flex-col items-center text-[10px] text-slate-500 font-bold uppercase"><span>Mi</span><div class="w-8 h-8 mt-1 border border-slate-700 rounded-full"></div></div>
+            <div class="flex flex-col items-center text-[10px] text-slate-500 font-bold uppercase"><span>Do</span><div class="w-8 h-8 mt-1 border border-slate-700 rounded-full"></div></div>
+            <div class="flex flex-col items-center text-[10px] text-slate-500 font-bold uppercase"><span>Fr</span><div class="w-8 h-8 mt-1 border border-slate-700 rounded-full"></div></div>
+        </div>
+
         <main class="px-6 space-y-6">
-            <div class="bg-[#1e293b]/50 p-6 rounded-[32px] border border-gray-800 flex flex-col items-center shadow-2xl">
-                <div class="relative flex items-center justify-center">
-                    <svg class="rotate-[-90deg]" width="180" height="180">
-                        <circle stroke="#1f2937" stroke-width="10" fill="transparent" r="75" cx="90" cy="90"/>
-                        <circle id="kcal-ring" stroke="#db2777" stroke-width="10" stroke-dasharray="471" stroke-dashoffset="120" stroke-linecap="round" fill="transparent" r="75" cx="90" cy="90"/>
-                    </svg>
-                    <div class="absolute text-center">
-                        <span id="kcal-offen" class="text-4xl font-black block">2514</span>
-                        <span class="text-gray-500 text-[10px] uppercase tracking-widest">kcal offen</span>
+            <div class="bg-slate-900/80 p-6 rounded-[32px] border border-slate-800 flex flex-col items-center shadow-2xl">
+                <p class="text-xs text-slate-400 mb-4 font-bold tracking-widest uppercase">Ernährungsplan heute</p>
+                <div class="flex items-center gap-6">
+                    <div class="text-center"><span class="block font-bold">611</span><span class="text-[9px] text-slate-500 uppercase">konsumiert</span></div>
+                    
+                    <div class="relative flex items-center justify-center">
+                        <svg class="progress-ring" width="120" height="120">
+                            <circle stroke="#1e293b" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                            <circle stroke="#db2777" stroke-width="8" stroke-dasharray="314" stroke-dashoffset="100" stroke-linecap="round" fill="transparent" r="50" cx="60" cy="60"/>
+                        </svg>
+                        <div class="absolute text-center">
+                            <span id="kcal-offen" class="text-xl font-black block">2514</span>
+                            <span class="text-[8px] text-slate-500 uppercase tracking-tighter">kcal offen</span>
+                        </div>
                     </div>
+
+                    <div class="text-center"><span class="block font-bold">3125</span><span class="text-[9px] text-slate-500 uppercase">geplant</span></div>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-8 mt-8 w-full">
-                    <div class="text-center border-b-2 border-blue-500 pb-2">
-                        <span id="carbs" class="block font-bold">72 / 308g</span>
-                        <span class="text-[9px] text-gray-500 uppercase">Kohlenhydrate</span>
-                    </div>
-                    <div class="text-center border-b-2 border-pink-600 pb-2">
-                        <span id="protein" class="block font-bold">37 / 218g</span>
-                        <span class="text-[9px] text-gray-500 uppercase">Eiweiß</span>
-                    </div>
-                    <div class="text-center border-b-2 border-emerald-500 pb-2">
-                        <span id="fat" class="block font-bold">16 / 104g</span>
-                        <span class="text-[9px] text-gray-500 uppercase">Fett</span>
-                    </div>
+                <div class="flex gap-10 mt-8 text-center border-t border-slate-800 pt-4 w-full justify-around">
+                    <div><span class="block font-bold text-sm">72 / 308g</span><span class="text-[8px] text-slate-500 uppercase">Kohlenhydrate</span></div>
+                    <div><span class="block font-bold text-sm">37 / 218g</span><span class="text-[8px] text-slate-500 uppercase">Eiweiß</span></div>
+                    <div><span class="block font-bold text-sm">16 / 104g</span><span class="text-[8px] text-slate-500 uppercase">Fett</span></div>
                 </div>
             </div>
 
-            <div class="space-y-4">
-                <div class="bg-[#1e293b]/40 p-5 rounded-3xl flex justify-between items-center border border-gray-800">
+            <div class="space-y-3">
+                <div class="bg-slate-800/50 p-5 rounded-3xl flex justify-between items-center border border-slate-700">
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-pink-600/10 rounded-xl flex items-center justify-center text-xl">🍳</div>
-                        <div><p class="font-bold">Frühstück</p><p class="text-[10px] text-gray-500">611 kcal</p></div>
+                        <span class="text-xl">☕</span>
+                        <div><p class="font-bold text-sm">Frühstück</p><p class="text-[10px] text-slate-500">611 kcal</p></div>
                     </div>
-                    <button onclick="addEntry(611)" class="text-pink-600 text-3xl font-light">+</button>
+                    <button class="text-pink-600 text-2xl">+</button>
                 </div>
-                <div class="bg-[#1e293b]/40 p-5 rounded-3xl flex justify-between items-center border border-gray-800 text-gray-400">
-                    <div class="flex items-center gap-4"><span>🥪</span> <p class="font-bold">Mittagessen</p></div>
-                    <button class="text-pink-600 text-3xl font-light">+</button>
+                <div class="bg-slate-800/50 p-5 rounded-3xl flex justify-between items-center border border-slate-700">
+                    <div class="flex items-center gap-4"><span class="text-xl">🥪</span><p class="font-bold text-sm">Mittag</p></div>
+                    <button class="text-pink-600 text-2xl">+</button>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        // DEINE FIREBASE DATEN
+        // DEINE FIXEN DATEN (Korrigiert)
         const firebaseConfig = {
             apiKey: "AIzaSyBvAvCiCoMu6j9znTnjnv21vgaqFLwgNAk",
             authDomain: "bluefit-d671e.firebaseapp.com",
@@ -85,9 +96,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const db = firebase.firestore();
 
-        // AUTH FUNKTION
         function handleAuth() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
@@ -98,32 +107,15 @@
                 return;
             }
 
-            errorElement.innerText = "Prüfe Daten...";
-
-            auth.signInWithEmailAndPassword(email, pass)
-                .catch((error) => {
-                    if (error.code === 'auth/user-not-found') {
-                        return auth.createUserWithEmailAndPassword(email, pass);
-                    } else {
-                        errorElement.innerText = "Fehler: " + error.message;
-                    }
-                });
+            auth.signInWithEmailAndPassword(email, pass).catch((error) => {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    return auth.createUserWithEmailAndPassword(email, pass);
+                } else {
+                    errorElement.innerText = error.message;
+                }
+            });
         }
 
-        // ZUSTANDS-ÜBERWACHUNG
         auth.onAuthStateChanged(user => {
             if (user) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-content').classList.remove('hidden');
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('app-content').classList.add('hidden');
-            }
-        });
-
-        function addEntry(kcal) {
-            alert("Mahlzeit hinzugefügt! (Logik folgt im nächsten Schritt)");
-        }
-    </script>
-</body>
-</html>
+                document.getElementById('login-screen').classList.add('
