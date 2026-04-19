@@ -1,62 +1,32 @@
-/* Grunddesign */
-body { 
-    background-color: #0f172a; 
-    color: white; 
-    font-family: sans-serif;
-    -webkit-tap-highlight-color: transparent; 
-}
-
+body { background-color: #0f172a; color: white; font-family: sans-serif; }
 .hidden { display: none; }
+.progress-ring { transform: rotate(-90deg); transition: stroke-dashoffset 0.5s; }
 
-.progress-ring { 
-    transform: rotate(-90deg); 
-    transition: stroke-dashoffset 0.5s ease-in-out; 
-}
+details { position: relative; overflow: visible !important; }
+summary { list-style: none; cursor: pointer; }
 
-/* Mahlzeiten-Karten */
-summary::-webkit-details-marker { display: none; }
-details summary { list-style: none; outline: none; }
-
-/* WICHTIG: Das sorgt dafür, dass die Suche nicht abgeschnitten wird */
-details { 
-    position: relative; 
-    overflow: visible !important; 
-}
-
-details[open] summary { 
-    border-bottom: 1px solid #1e293b; 
-    margin-bottom: 12px; 
-    padding-bottom: 12px; 
-}
-
-/* Die Suchergebnisse - Schweben über allem */
+/* Die Suchliste - jetzt bombenfest positioniert */
 .search-results {
-    max-height: 250px;
-    overflow-y: auto;
-    background-color: #1e293b !important;
-    border: 2px solid #db2777; /* Pinker Rand zur Kontrolle */
-    border-radius: 1rem;
     position: absolute;
+    top: 100%; /* Direkt unter das Input-Feld */
     left: 0;
-    right: 0;
-    top: 100%; /* Direkt unter dem Input-Feld */
-    z-index: 9999 !important; 
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-    margin-top: 5px;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #1e293b !important; /* Dunkler Hintergrund */
+    border: 2px solid #db2777;
+    border-radius: 12px;
+    z-index: 9999 !important; /* Über allem anderen */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
 .search-item {
-    padding: 14px;
+    padding: 12px;
     border-bottom: 1px solid #334155;
     cursor: pointer;
-    background-color: #1e293b;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    font-size: 0.75rem;
 }
 
-.search-item:hover { 
-    background-color: #334155; 
-}
-
-.glass-icon { font-size: 1.5rem; transition: opacity 0.3s; }
+.search-item:hover { background: #334155; }
