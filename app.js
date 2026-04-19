@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// --- DEINE FIREBASE KONFIGURATION ---
 const firebaseConfig = {
     apiKey: "AIzaSyBvAvCiCoMU6j9znTnjnv21vgaqFlwgNak",
     authDomain: "bluefit-d671e.firebaseapp.com",
@@ -24,172 +25,82 @@ const categories = [
     { id: 'snack2', name: 'Snack 2', emoji: '🍫' }
 ];
 
-// --- LOGIN LOGIK ---
+// --- LOGIN & AUTH ---
 const loginBtn = document.getElementById('login-btn');
 if (loginBtn) {
     loginBtn.onclick = async () => {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
-        
-        if (!email || !pass) {
-            alert("Bitte E-Mail und Passwort eingeben!");
-            return;
-        }
-
+        if (!email || !pass) return;
         try { 
             await signInWithEmailAndPassword(auth, email, pass); 
-        } catch (error) { 
-            console.log("Login fehlgeschlagen, versuche Registrierung...", error.message);
-            try {
-                await createUserWithEmailAndPassword(auth, email, pass);
-            } catch (regError) {
-                alert("Fehler: " + regError.message);
-            }
+        } catch (e) { 
+            try { await createUserWithEmailAndPassword(auth, email, pass); } catch(err) { alert(err.message); }
         }
     };
 }
 
-const logoutBtn = document.getElementById('logout-btn');
-if (logoutBtn) {
-    logoutBtn.onclick = () => signOut(auth);
-}
+document.getElementById('logout-btn').onclick = () => signOut(auth);
 
-// --- AUTH STATUS & DATEN-SYNC ---
 onAuthStateChanged(auth, (user) => {
-    const loginScreen = document.getElementById('login-screen');
-    const appContent = document.getElementById('app-content');
-
     if (user) {
-        loginScreen.classList.add('hidden');
-        appContent.classList.remove('hidden');
-        
-        // Echtzeit-Sync mit Firestore
-        onSnapshot(doc(db, "users", user.uid), (docSnap) => {
-            if (docSnap.exists()) {
-                userData = docSnap.data();
-                renderUI();
-            } else {
-                // Initial-Daten für neue User
-                setDoc(doc(db, "users", user.uid), { 
-                    goal: 2500, 
-                    eaten: 0, 
-                    water: 0, 
-                    waterGoal: 2500, 
-                    meals: [] 
-                });
-            }
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-content').classList.remove('hidden');
+        onSnapshot(doc(db, "users", user.uid), (s) => {
+            if (s.exists()) { userData = s.data(); renderUI(); }
+            else { setDoc(doc(db, "users", user.uid), { goal: 2150, water: 0, waterGoal: 2500, meals: [] }); }
         });
     } else {
-        loginScreen.classList.remove('hidden');
-        appContent.classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('app-content').classList.add('hidden');
     }
 });
 
-// --- SUCHE (DEUTSCHE ERGEBNISSE) ---
+// --- OPTIMIERTE DEUTSCHE SUCHE ---
 window.searchFood = async (catId) => {
     const query = document.getElementById(`in-${catId}-n`).value;
     const resDiv = document.getElementById(`res-${catId}`);
-    if (query.length < 3) { resDiv.innerHTML = ""; resDiv.classList.add('hidden'); return; }
+    
+    if (query.length < 3) { 
+        resDiv.innerHTML = ""; 
+        resDiv.classList.add('hidden'); 
+        return; 
+    }
 
     try {
-        const url = `https://de.openfoodfacts.org/cgi/search.pl?search_terms=${query}&search_simple=1&action=process&json=1&page_size=8&sort_by=unique_scans_n`;
+        // Filtert gezielt nach Deutschland (tag_0=germany) und sortiert nach Beliebtheit (unique_scans_n)
+        const url = `https://de.openfoodfacts.org/cgi/search.pl?search_terms=${query}&tagtype_0=countries&tag_contains_0=contains&tag_0=germany&action=process&json=1&page_size=12&sort_by=unique_scans_n`;
+        
         const resp = await fetch(url);
         const data = await resp.json();
         
         if (data.products && data.products.length > 0) {
-            resDiv.classList.remove('hidden');
-            resDiv.innerHTML = data.products
-                .filter(p => p.nutriments && p.nutriments['energy-kcal_100g'])
-                .map(p => `
-                <div onclick="window.selectProduct('${catId}', '${(p.product_name || 'Unbekannt').replace(/'/g, "")}', ${p.nutriments['energy-kcal_100g']})" 
-                     class="search-item">
-                    <div class="flex flex-col overflow-hidden">
-                        <span class="text-white font-bold text-[11px] truncate">${p.product_name}</span>
-                        <span class="text-[9px] text-slate-400 truncate">${p.brands || ''}</span>
-                    </div>
-                    <span class="text-pink-500 font-bold text-xs ml-2 whitespace-nowrap">${Math.round(p.nutriments['energy-kcal_100g'])} kcal</span>
-                </div>
-            `).join('');
+            // Nur Produkte behalten, die Kalorien haben und bevorzugt deutsche Namen nutzen
+            const filtered = data.products.filter(p => p.nutriments && p.nutriments['energy-kcal_100g']);
+            
+            if (filtered.length > 0) {
+                resDiv.classList.remove('hidden');
+                resDiv.innerHTML = filtered.map(p => {
+                    const name = p.product_name_de || p.product_name || "Unbekanntes Produkt";
+                    const brand = p.brands ? p.brands.split(',')[0] : "Markenlos";
+                    const kcal = Math.round(p.nutriments['energy-kcal_100g']);
+
+                    return `
+                    <div onclick="window.selectProduct('${catId}', '${name.replace(/'/g, "")}', ${kcal})" 
+                         class="search-item">
+                        <div class="flex flex-col overflow-hidden">
+                            <span class="text-white font-bold text-[11px] truncate">${name}</span>
+                            <span class="text-[9px] text-slate-400 truncate">${brand}</span>
+                        </div>
+                        <span class="text-pink-500 font-bold text-xs ml-2 whitespace-nowrap">${kcal} kcal</span>
+                    </div>`;
+                }).join('');
+            }
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Suche fehlgeschlagen", e); }
 };
 
 window.selectProduct = (catId, name, kcal) => {
     document.getElementById(`in-${catId}-n`).value = name;
-    document.getElementById(`in-${catId}-k`).value = Math.round(kcal);
-    document.getElementById(`res-${catId}`).innerHTML = "";
-    document.getElementById(`res-${catId}`).classList.add('hidden');
-};
-
-// --- FUNKTIONEN ---
-window.addMeal = async (catId) => {
-    const n = document.getElementById(`in-${catId}-n`).value;
-    const k = parseInt(document.getElementById(`in-${catId}-k`).value);
-    if (!n || isNaN(k)) return;
-    const newMeal = { id: Date.now().toString(), name: n, kcal: k, category: catId };
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { meals: [...(userData.meals || []), newMeal] });
-};
-
-window.deleteMeal = async (id) => {
-    const filtered = userData.meals.filter(m => m.id !== id);
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { meals: filtered });
-};
-
-document.getElementById('add-water').onclick = async () => {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { water: (userData.water || 0) + 250 });
-};
-document.getElementById('sub-water').onclick = async () => {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { water: Math.max(0, (userData.water || 0) - 250) });
-};
-
-// --- RENDER UI ---
-function renderUI() {
-    const eaten = (userData.meals || []).reduce((s, m) => s + m.kcal, 0);
-    const goal = userData.goal || 2500;
-    document.getElementById('goal-val').innerText = goal;
-    document.getElementById('eaten-val').innerText = eaten;
-    document.getElementById('display-kcal-offen').innerText = Math.max(0, goal - eaten);
-    document.getElementById('kcal-ring').style.strokeDashoffset = 440 - (Math.min(eaten / goal, 1) * 440);
-
-    const wCont = document.getElementById('water-glasses');
-    wCont.innerHTML = "";
-    const full = Math.floor(userData.water / 250);
-    for(let i=0; i<10; i++) {
-        wCont.innerHTML += `<span class="glass-icon" style="opacity: ${i < full ? '1' : '0.1'}">🥛</span>`;
-    }
-    document.getElementById('water-current').innerText = userData.water || 0;
-
-    categories.forEach(cat => {
-        const catBox = document.getElementById(`cat-${cat.id}`);
-        if (!catBox) return;
-        const cMeals = (userData.meals || []).filter(m => m.category === cat.id);
-        const cSum = cMeals.reduce((s, m) => s + m.kcal, 0);
-
-        catBox.innerHTML = `
-            <details class="bg-slate-800/40 rounded-3xl border border-slate-800 mb-3 shadow-lg">
-                <summary class="p-5 flex justify-between items-center cursor-pointer">
-                    <div class="flex items-center gap-3"><span>${cat.emoji}</span> <span class="font-bold text-sm">${cat.name}</span></div>
-                    <span class="text-pink-500 font-bold text-sm">${cSum} kcal</span>
-                </summary>
-                <div class="p-4 bg-slate-900/20 space-y-4">
-                    <div class="space-y-2">${cMeals.map(m => `
-                        <div class="flex justify-between items-center bg-slate-800/60 p-3 rounded-xl text-xs border border-slate-700">
-                            <span>${m.name}</span>
-                            <div class="flex items-center gap-3">
-                                <span class="font-bold">${m.kcal} kcal</span>
-                                <button onclick="window.deleteMeal('${m.id}')" class="text-red-500 font-bold">✕</button>
-                            </div>
-                        </div>`).join('')}
-                    </div>
-                    <div class="relative">
-                        <div class="flex gap-2">
-                            <input id="in-${cat.id}-n" oninput="window.searchFood('${cat.id}')" type="text" placeholder="Suchen..." class="flex-1 bg-slate-900 p-3 rounded-xl text-xs border border-slate-700 outline-none text-white focus:border-pink-600">
-                            <input id="in-${cat.id}-k" type="number" placeholder="kcal" class="w-20 bg-slate-900 p-3 rounded-xl text-xs border border-slate-700 outline-none text-white">
-                            <button onclick="window.addMeal('${cat.id}')" class="bg-pink-600 px-4 rounded-xl font-bold">+</button>
-                        </div>
-                        <div id="res-${cat.id}" class="search-results hidden"></div>
-                    </div>
-                </div>
-            </details>`;
-    });
-}
+    document.getElementById(`in-${catId}-k`).value = kcal;
+    document.getElementById(`res-${catId}`).
