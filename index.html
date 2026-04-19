@@ -10,11 +10,11 @@
 <body class="pb-24">
 
     <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-5xl font-black text-pink-600 mb-8 italic italic">Bluefit</h1>
+        <h1 class="text-5xl font-black text-pink-600 mb-8 italic">Bluefit</h1>
         <div class="w-full max-w-sm space-y-4">
             <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 text-white outline-none">
             <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 text-white outline-none">
-            <button id="login-btn" class="w-full p-4 bg-pink-600 text-white rounded-2xl font-bold">Starten</button>
+            <button id="login-btn" class="w-full p-4 bg-pink-600 text-white rounded-2xl font-bold active:scale-95 transition-all">Starten</button>
         </div>
     </div>
 
@@ -42,22 +42,26 @@
                 </div>
             </div>
 
-            <div class="bg-slate-800/50 p-4 rounded-3xl border border-slate-700">
-                <div class="flex gap-2">
-                    <input id="food-name" type="text" placeholder="Was?" class="flex-1 bg-slate-900 p-3 rounded-xl text-sm outline-none text-white border border-slate-700">
-                    <input id="food-kcal" type="number" placeholder="kcal" class="w-20 bg-slate-900 p-3 rounded-xl text-sm outline-none text-white border border-slate-700">
-                    <button id="add-food-btn" class="bg-pink-600 px-4 rounded-xl font-bold text-xl">+</button>
-                </div>
+            <div class="space-y-3" id="meal-sections">
+                <div id="cat-breakfast"></div>
+                <div id="cat-lunch"></div>
+                <div id="cat-dinner"></div>
+                <div id="cat-snack1"></div>
+                <div id="cat-snack2"></div>
             </div>
 
-            <div id="food-list" class="space-y-3"></div>
-
-            <div class="bg-blue-900/20 p-5 rounded-3xl border border-blue-900/30 flex justify-between items-center">
-                <div>
-                    <p class="font-bold text-blue-400">Wasser</p>
-                    <p class="text-xs text-slate-500"><span id="water-val">0</span>ml</p>
+            <div class="bg-slate-900 p-6 rounded-[32px] border border-blue-900/30 mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-blue-400">Wasser Tracker</h3>
+                    <div class="flex gap-2">
+                        <button id="sub-water" class="bg-slate-800 w-8 h-8 rounded-full border border-slate-700">-</button>
+                        <button id="add-water" class="bg-blue-600 w-8 h-8 rounded-full font-bold shadow-lg shadow-blue-900/40">+</button>
+                    </div>
                 </div>
-                <button id="add-water-btn" class="bg-blue-600 w-12 h-12 rounded-2xl text-xl">💧</button>
+                <div id="water-glasses" class="flex flex-wrap gap-2 justify-center text-2xl transition-all"></div>
+                <p class="text-center text-[10px] text-slate-500 mt-4 uppercase tracking-widest">
+                    <span id="water-current" class="text-blue-400">0</span> / <span id="water-goal">2000</span> ml
+                </p>
             </div>
         </main>
     </div>
