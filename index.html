@@ -3,91 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlueFit Nutrition</title>
+    <title>BlueFit Nutrition Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
-        .progress-ring { transform: rotate(-90deg); }
-        .glass-btn { transition: all 0.2s; }
-        .glass-btn:active { transform: scale(0.9); background-color: #3b82f6; }
+        .hidden { display: none; }
     </style>
 </head>
 <body class="pb-24">
 
-    <header class="p-6 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <h1 class="text-2xl font-bold text-blue-500">BlueFit</h1>
-        <p class="text-xs text-slate-400">Heute, 19. April</p>
-    </header>
-
-    <main class="p-6 space-y-8">
-        
-        <div class="flex justify-center relative">
-            <svg class="progress-ring" width="200" height="200">
-                <circle class="text-slate-800" stroke-width="12" stroke="currentColor" fill="transparent" r="85" cx="100" cy="100"/>
-                <circle class="text-pink-600" stroke-width="12" stroke-dasharray="534" stroke-dashoffset="150" stroke-linecap="round" stroke="currentColor" fill="transparent" r="85" cx="100" cy="100"/>
-            </svg>
-            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-4xl font-black">1.840</span>
-                <span class="text-slate-400 text-sm">kcal offen</span>
-            </div>
+    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6">
+        <h1 class="text-4xl font-black text-blue-500 mb-8">BlueFit</h1>
+        <div class="w-full max-w-sm space-y-4">
+            <input id="email" type="email" placeholder="E-Mail" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-blue-500">
+            <input id="password" type="password" placeholder="Passwort" class="w-full p-4 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-blue-500">
+            <button onclick="handleLogin()" class="w-full p-4 bg-blue-600 rounded-2xl font-bold hover:bg-blue-500">Einloggen / Registrieren</button>
+            <p id="auth-error" class="text-red-500 text-sm text-center"></p>
         </div>
+    </div>
 
-        <div class="grid grid-cols-3 gap-4">
-            <div class="bg-slate-800 p-3 rounded-2xl text-center border-b-4 border-blue-500">
-                <span class="block font-bold">120g</span>
-                <span class="text-[10px] text-slate-400 uppercase">Carbs</span>
+    <div id="app-content" class="hidden">
+        <header class="p-6 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-blue-500">BlueFit</h1>
+                <p id="user-display" class="text-xs text-slate-400">Lädt...</p>
             </div>
-            <div class="bg-slate-800 p-3 rounded-2xl text-center border-b-4 border-emerald-500">
-                <span class="block font-bold">45g</span>
-                <span class="text-[10px] text-slate-400 uppercase">Protein</span>
-            </div>
-            <div class="bg-slate-800 p-3 rounded-2xl text-center border-b-4 border-orange-500">
-                <span class="block font-bold">30g</span>
-                <span class="text-[10px] text-slate-400 uppercase">Fett</span>
-            </div>
-        </div>
+            <button onclick="handleLogout()" class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-400">Logout</button>
+        </header>
 
-        <section class="bg-blue-600 rounded-3xl p-5 shadow-lg shadow-blue-900/20">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold">Wassertracker</h3>
-                <span id="water-count" class="text-sm font-medium">0.0 / 2.5 L</span>
-            </div>
-            <div class="flex flex-wrap gap-3 justify-center">
-                <button onclick="addWater(0.25)" class="glass-btn w-8 h-10 border-2 border-white/50 rounded-b-lg rounded-t-sm"></button>
-                <button onclick="addWater(0.25)" class="glass-btn w-8 h-10 border-2 border-white/50 rounded-b-lg rounded-t-sm"></button>
-                <button onclick="addWater(0.25)" class="glass-btn w-8 h-10 border-2 border-white/50 rounded-b-lg rounded-t-sm"></button>
-                <button onclick="addWater(0.25)" class="glass-btn w-8 h-10 border-2 border-white/50 rounded-b-lg rounded-t-sm"></button>
-            </div>
-        </section>
-
-        <section>
-            <h3 class="font-bold mb-4">Deine Rezepte</h3>
-            <div class="bg-slate-800 rounded-2xl overflow-hidden mb-4">
-                <div class="h-32 bg-slate-700 flex items-center justify-center text-slate-500">Foto hier</div>
-                <div class="p-4 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold">Avocado Bowl</p>
-                        <p class="text-xs text-slate-400">420 kcal | 15 Min</p>
-                    </div>
-                    <button class="text-blue-500 text-2xl">+</button>
+        <main class="p-6 space-y-8">
+            <div class="flex justify-center relative">
+                <div class="w-48 h-48 rounded-full border-[12px] border-slate-800 flex flex-col items-center justify-center border-t-pink-600 border-r-pink-600">
+                    <span id="kcal-display" class="text-4xl font-black">2500</span>
+                    <span class="text-slate-400 text-sm">kcal offen</span>
                 </div>
             </div>
-        </section>
-    </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-4 flex justify-around items-center">
-        <span class="text-blue-500 text-xl">🏠</span>
-        <span class="text-slate-500 text-xl">📖</span>
-        <div class="bg-pink-600 w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-pink-900/40 -mt-10 border-4 border-slate-900">+</div>
-        <span class="text-slate-500 text-xl">📈</span>
-        <span class="text-slate-500 text-xl">👤</span>
-    </nav>
+            <section class="bg-blue-600 rounded-3xl p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold">Wassertracker</h3>
+                    <span id="water-display" class="text-sm font-bold">0.0 / 2.5 L</span>
+                </div>
+                <div class="flex justify-center gap-2">
+                    <button onclick="updateWater(0.25)" class="bg-white/20 hover:bg-white/40 w-12 h-12 rounded-xl flex items-center justify-center text-xl">💧</button>
+                    <button onclick="resetWater()" class="bg-black/10 w-12 h-12 rounded-xl flex items-center justify-center text-xs">Reset</button>
+                </div>
+            </section>
+
+            <div class="space-y-3">
+                <h3 class="font-bold">Heute gegessen</h3>
+                <div class="bg-slate-800 p-4 rounded-2xl flex justify-between items-center">
+                    <span>☕ Frühstück</span>
+                    <button onclick="addKcal(400)" class="text-blue-500 font-bold">+ 400</button>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-2xl flex justify-between items-center">
+                    <span>🥪 Mittag</span>
+                    <button onclick="addKcal(600)" class="text-blue-500 font-bold">+ 600</button>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
-        let water = 0;
-        function addWater(amount) {
-            water += amount;
-            document.getElementById('water-count').innerText = water.toFixed(1) + " / 2.5 L";
+        // --- DEINE FIREBASE KONFIGURATION ---
+        // (Ich zeige dir gleich, wo du diese Daten herbekommst!)
+        const firebaseConfig = {
+            apiKey: "HIER_API_KEY_EINSETZEN",
+            authDomain: "DEIN_PROJEKT.firebaseapp.com",
+            projectId: "DEIN_PROJEKT",
+            storageBucket: "DEIN_PROJEKT.appspot.com",
+            messagingSenderId: "ID",
+            appId: "APP_ID"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- AUTH LOGIK ---
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            auth.signInWithEmailAndPassword(email, pass)
+                .catch(() => auth.createUserWithEmailAndPassword(email, pass))
+                .catch(err => document.getElementById('auth-error').innerText = err.message);
+        }
+
+        function handleLogout() { auth.signOut(); }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
+                document.getElementById('user-display').innerText = user.email;
+                loadData(user.uid);
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app-content').classList.add('hidden');
+            }
+        });
+
+        // --- DATEN LOGIK ---
+        let currentKcal = 2500;
+        let currentWater = 0;
+
+        function addKcal(amount) {
+            currentKcal -= amount;
+            updateUI();
+            saveData();
+        }
+
+        function updateWater(amount) {
+            currentWater += amount;
+            updateUI();
+            saveData();
+        }
+
+        function updateUI() {
+            document.getElementById('kcal-display').innerText = currentKcal;
+            document.getElementById('water-display').innerText = currentWater.toFixed(2) + " / 2.5 L";
+        }
+
+        function saveData() {
+            const user = auth.currentUser;
+            if(user) {
+                db.collection("stats").doc(user.uid).set({
+                    kcal: currentKcal,
+                    water: currentWater
+                });
+            }
+        }
+
+        function loadData(uid) {
+            db.collection("stats").doc(uid).get().then(doc => {
+                if(doc.exists) {
+                    currentKcal = doc.data().kcal;
+                    currentWater = doc.data().water;
+                    updateUI();
+                }
+            });
         }
     </script>
 </body>
