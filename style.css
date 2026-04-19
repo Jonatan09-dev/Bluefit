@@ -1,18 +1,62 @@
-body { background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
-.hidden { display: none; }
-.progress-ring { transform: rotate(-90deg); transition: stroke-dashoffset 0.5s ease-in-out; }
-
-summary::-webkit-details-marker { display: none; }
-details summary { list-style: none; outline: none; }
-details[open] summary { border-bottom: 1px solid #1e293b; margin-bottom: 12px; padding-bottom: 12px; }
-
-/* Suchergebnisse Styling */
-.search-results {
-    max-height: 200px;
-    overflow-y: auto;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-top: none;
+/* Grunddesign */
+body { 
+    background-color: #0f172a; 
+    color: white; 
+    font-family: sans-serif;
+    -webkit-tap-highlight-color: transparent; 
 }
 
-.glass-icon { transition: transform 0.2s; display: inline-block; }
+.hidden { display: none; }
+
+.progress-ring { 
+    transform: rotate(-90deg); 
+    transition: stroke-dashoffset 0.5s ease-in-out; 
+}
+
+/* Mahlzeiten-Karten */
+summary::-webkit-details-marker { display: none; }
+details summary { list-style: none; outline: none; }
+
+/* WICHTIG: Das sorgt dafür, dass die Suche nicht abgeschnitten wird */
+details { 
+    position: relative; 
+    overflow: visible !important; 
+}
+
+details[open] summary { 
+    border-bottom: 1px solid #1e293b; 
+    margin-bottom: 12px; 
+    padding-bottom: 12px; 
+}
+
+/* Die Suchergebnisse - Schweben über allem */
+.search-results {
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: #1e293b !important;
+    border: 2px solid #db2777; /* Pinker Rand zur Kontrolle */
+    border-radius: 1rem;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%; /* Direkt unter dem Input-Feld */
+    z-index: 9999 !important; 
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    margin-top: 5px;
+}
+
+.search-item {
+    padding: 14px;
+    border-bottom: 1px solid #334155;
+    cursor: pointer;
+    background-color: #1e293b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-item:hover { 
+    background-color: #334155; 
+}
+
+.glass-icon { font-size: 1.5rem; transition: opacity 0.3s; }
