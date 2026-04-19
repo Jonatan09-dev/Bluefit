@@ -1,13 +1,13 @@
-body {
-    background-color: #0f172a;
-    color: white;
-}
+body { background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
+.hidden { display: none; }
+.progress-ring { transform: rotate(-90deg); transition: stroke-dashoffset 0.5s ease-in-out; }
 
-.hidden {
-    display: none;
-}
+/* Styling für die aufklappbaren Zeilen */
+summary::-webkit-details-marker { display: none; }
+details summary { list-style: none; outline: none; }
+details[open] summary { border-bottom: 1px solid #1e293b; margin-bottom: 12px; padding-bottom: 12px; }
 
-.progress-ring {
-    transform: rotate(-90deg);
-    transition: stroke-dashoffset 0.5s ease;
-}
+.glass-icon { transition: transform 0.2s; cursor: pointer; }
+.glass-icon:active { transform: scale(1.2); }
+
+input::placeholder { color: #475569; }
